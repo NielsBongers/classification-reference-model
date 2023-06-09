@@ -6,7 +6,9 @@ import torch.optim as optim
 import torchvision 
 import torchvision.models as models 
 from torch.utils.tensorboard import SummaryWriter
+from torchmetrics.classification import MulticlassConfusionMatrix  
 
+from data_handling import Transforms, get_transforms
 from logging_setup import get_logger
 
 def save_model(model, epoch: int, parameters: dict, run_path) -> None: 
@@ -22,7 +24,31 @@ def save_model(model, epoch: int, parameters: dict, run_path) -> None:
         torch.save(model, Path(run_path, "models", "best.pt")) 
     else: 
         torch.save(model, Path(run_path, "models", "model saved at " + str(epoch) + ".pt")) 
+
+
+def load_model(model_path: str): 
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = torch.load(model_path, map_location=device) 
+    return model 
     
+    
+def evaluate_model(model, img): 
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    
+    transforms = Transforms(transforms=get_transforms()["test"]) 
+    img = transforms(img).unsqueeze(0).to(device) 
+    
+    model.eval() 
+    
+    outputs = model(img) 
+    confidence, _ = torch.max(torch.nn.functional.softmax(outputs, dim=1), 1)
+    confidence = confidence.item() 
+    
+    _, preds = torch.max(outputs, 1) 
+    prediction = preds.detach().cpu().item()
+    
+    return prediction, confidence
+
     
 def train_model(model, data_loader, device, loss_function, optimizer, scheduler, parameters): 
     logger = get_logger(__name__)
@@ -52,7 +78,7 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             total_count = 0
             running_corrects = 0
             
-            # metric = MulticlassConfusionMatrix(num_classes=2).to(device)
+            metric = MulticlassConfusionMatrix(num_classes=2).to(device) 
 
             for index, (inputs, labels) in enumerate(data_loader[phase]):
                 inputs = inputs.to(device)
@@ -75,8 +101,8 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
                         optimizer.step()
                         optimizer.zero_grad()
                         
-                    # if phase == "test": 
-                        # metric.update(preds, labels) 
+                    if phase == "test": 
+                        metric.update(preds, labels) 
                         
                 total_count += labels.shape[0]
                 running_corrects += torch.sum(preds == labels.data).item() 
@@ -90,7 +116,7 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             
             if phase == "test": 
                 test_accuracy = epoch_accuracy
-                # logger.info(f"Confusion matrix:{metric.compute()}")
+                logger.info(f"Confusion matrix:{metric.compute()}")
 
             if phase == 'test' and epoch_accuracy > best_accuracy:
                 logger.info(f"New best model! Accuracy is {epoch_accuracy}. Saving the model.")
