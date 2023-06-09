@@ -138,10 +138,16 @@ def prepare_model(data_loaders: dict, parameters: dict) -> None:
     logger = get_logger(__name__)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    num_classes = 2
     
     model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.IMAGENET1K_V1, classes=2) 
-    model.classifier[1] = nn.Linear(in_features=1280, out_features=num_classes) 
+    model.classifier[1] = nn.Linear(in_features=1280, out_features=2) 
+    
+    # model = models.convnext_base(weights=torchvision.models.ConvNeXt_Base_Weights.IMAGENET1K_V1) 
+    # model.head = nn.Sequential(nn.Linear(1024, 256),
+    #     nn.ReLU(),
+    #     nn.Linear(256, 1),
+    #     nn.Sigmoid())
+    
     model = model.to(device)
 
     loss_function = nn.CrossEntropyLoss()

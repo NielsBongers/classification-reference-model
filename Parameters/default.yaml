@@ -1,6 +1,6 @@
 run name: Testing
 root: "../Datasets/Temnos demo/X-ray/Sorted"
-learning rate: 0.01 
+learning rate: 0.001
 gamma: 0.9 
 epochs: 1000 
 desired batch size: 32 

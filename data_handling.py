@@ -22,9 +22,14 @@ class Transforms:
 
 
 def get_transforms() -> dict: 
+    """Creates a list of transforms for train and test. 
+
+    Returns:
+        dict: transforms created. 
+    """
     transform_train = A.Compose(
         [
-            A.Resize(448, 448), 
+            A.Resize(224, 224), 
             A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=15, p=0.5),
             A.RGBShift(r_shift_limit=15, g_shift_limit=15, b_shift_limit=15, p=0.5), 
             # A.RandomBrightnessContrast(p=0.5),
@@ -35,7 +40,7 @@ def get_transforms() -> dict:
 
     transform_test = A.Compose(
         [
-            A.Resize(448, 448), 
+            A.Resize(224, 224), 
             A.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
             ToTensorV2()
         ]
@@ -49,7 +54,17 @@ def get_transforms() -> dict:
     return transform_dict
 
 
-def create_image_folder(root: str, split_type: str, batch_size) -> ImageFolder: 
+def create_image_folder(root: str, split_type: str, batch_size) -> torch.utils.data.DataLoader: 
+    """Creates an ImageLoader dataloader from the directory it is pointed at. 
+
+    Args:
+        root (str): path to the folder. 
+        split_type (str): train or test. 
+        batch_size (_type_): batch size for the eventual training. 
+
+    Returns:
+        torch.utils.data.DataLoader: dataloader containing the images. 
+    """
     logger = get_logger(__name__)
     logger.info(f"Creating image folder based on {root}.")
 
