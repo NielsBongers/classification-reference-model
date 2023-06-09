@@ -1,52 +1,70 @@
 import numpy as np 
-import shutil 
-from PIL import Image as Im 
 from pathlib import Path 
-from sklearn.model_selection import train_test_split
 
 import torch 
-from torch.utils.data import Dataset 
-from torchvision.datasets import ImageFolder 
+from torchvision.datasets import ImageFolder
+import torchvision.transforms as transforms 
+
 import albumentations as A 
 from albumentations.pytorch import ToTensorV2
 
-from logging_setup import get_logger 
+from logging_setup import get_logger
 
-def create_split_names(root: str, test_size=0.2): 
-    file_path_list = list(Path(root, "raw").glob("**/*")) 
+
+class Transforms:
+    """Required for Albumentations; has to call this class to apply the list of transforms to each image. 
+    """
+    def __init__(self, transforms: A.Compose):
+        self.transforms = transforms
+
+    def __call__(self, img):
+        return self.transforms(image=np.array(img))['image']
+
+
+def get_transforms() -> dict: 
+    transform_train = A.Compose(
+        [
+            A.Resize(448, 448), 
+            A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=15, p=0.5),
+            A.RGBShift(r_shift_limit=15, g_shift_limit=15, b_shift_limit=15, p=0.5), 
+            # A.RandomBrightnessContrast(p=0.5),
+            A.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            ToTensorV2()
+        ]
+    )
+
+    transform_test = A.Compose(
+        [
+            A.Resize(448, 448), 
+            A.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            ToTensorV2()
+        ]
+    )
     
-    sorted_classes_lists = {
-        "present": [], 
-        "removed": [] 
+    transform_dict = {
+        "train": transform_train, 
+        "test": transform_test
     }
     
-    for file_path in file_path_list: 
-        uuid, increment, name = file_path.stem.split(" - ") 
-        
-        if increment.isalpha(): 
-            sorted_classes_lists["removed"].append(file_path)
-        else: 
-            sorted_classes_lists["present"].append(file_path)
+    return transform_dict
 
-    destination_folder_name = "Sorted" 
-    Path(root, destination_folder_name).mkdir(exist_ok=True) 
+def create_image_folder(root: str, split_type: str, batch_size) -> ImageFolder: 
+    logger = get_logger(__name__)
+    logger.info(f"Creating image folder based on {root}.")
 
-    for sorting_class in sorted_classes_lists.keys(): 
-        train_list, test_list = train_test_split(sorted_classes_lists[sorting_class], test_size=test_size, random_state=42) 
-        
-        train_test_dict = {
-            "train": train_list, 
-            "test": test_list
-        }
-        
-        for train_test_key in train_test_dict.keys(): 
-            Path(root, destination_folder_name, train_test_key).mkdir(exist_ok=True) 
-            for file_path in train_test_dict[train_test_key]: 
-                img = Im.open(file_path) 
-                width, height = img.size 
-                img = img.crop((0, 450, width-300, height-250))
-                img.save(Path(root, destination_folder_name, train_test_key, file_path.name))
+    transform_dict = get_transforms() 
+    dataset = ImageFolder(Path(root, split_type), transform=Transforms(transforms=transform_dict[split_type])) 
+    
+    logger.info(f"For {split_type}, we have {dataset.class_to_idx}")
+    
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size, shuffle=(split_type=="train"))
+    
+    return data_loader
+    
 
 if __name__ == "__main__": 
-    root = "../Datasets/Temnos demo/X-ray" 
-    create_split_names(root) 
+    root = Path("../Datasets/Temnos demo/X-ray/Sorted") 
+    dataset = create_image_folder(root, "train", batch_size=10) 
+    
+    for item in dataset: 
+        print(item) 
