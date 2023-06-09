@@ -1,0 +1,11 @@
+# Model files 
+*.pt 
+
+# Logs
+*.log 
+
+# Runs
+runs/*/*
+
+# Python 
+__pycache__

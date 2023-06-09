@@ -1,4 +1,5 @@
 import yaml 
+from pathlib import Path 
 
 
 def parse_yaml(file_name: str) -> dict: 
@@ -10,7 +11,11 @@ def parse_yaml(file_name: str) -> dict:
     Returns:
         dict: contents of the file
     """
-    with open("Parameters/default.yaml") as f: 
+    with open(Path("parameters", file_name)) as f: 
         yaml_data = yaml.safe_load(f)
     return yaml_data
 
+
+def save_yaml(file_path: str, yaml_data: dict): 
+    with open(file_path, 'w') as f: 
+        yaml.dump(yaml_data, f, default_flow_style=False) 
