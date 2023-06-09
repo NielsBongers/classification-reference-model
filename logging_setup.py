@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def get_logger(logger_name): 
-    Path("Logs").mkdir(parents=True, exist_ok=True)
+    Path("logs").mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO, 
         format="%(asctime)s.%(msecs)03d [%(levelname)s] [%(name)s] %(message)s", 

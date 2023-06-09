@@ -48,6 +48,7 @@ def get_transforms() -> dict:
     
     return transform_dict
 
+
 def create_image_folder(root: str, split_type: str, batch_size) -> ImageFolder: 
     logger = get_logger(__name__)
     logger.info(f"Creating image folder based on {root}.")

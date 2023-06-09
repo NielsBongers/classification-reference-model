@@ -1,7 +1,7 @@
 import re 
 from pathlib import Path 
 from parse_hyper import parse_yaml, save_yaml
-
+from logging_setup import get_logger
 
 def create_run_folder(parameters: dict): 
     """Checks the hyperparameter YAML for the run name, either creates orincrements the existing folders. 
@@ -9,6 +9,9 @@ def create_run_folder(parameters: dict):
     Args:
         parameters (dict): values for the hyperparameters. 
     """
+    logger = get_logger(__name__)
+    logger.info("Saving run information.")
+    
     run_name = parameters["run name"] 
 
     folder_increment_list = [] 
@@ -31,8 +34,15 @@ def create_run_folder(parameters: dict):
     Path(run_path).mkdir(parents=True) 
     Path(run_path, "parameters").mkdir(parents=True) 
     Path(run_path, "models").mkdir(parents=True) 
+    Path(run_path, "tensorboard").mkdir(parents=True) 
+    
+    parameters["run path"] = str(run_path) 
+    
+    logger.info(f"Saved run parameters to {str(run_path)}")
     
     save_yaml(Path(run_path, "parameters", "hyperparameters.yaml"), parameters)
+    
+    return run_path 
     
 if __name__ == "__main__": 
     parameters = parse_yaml("default.yaml")
