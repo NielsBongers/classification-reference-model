@@ -29,7 +29,7 @@ def get_transforms() -> dict:
     """
     transform_train = A.Compose(
         [
-            A.Resize(224, 224), 
+            A.Resize(299, 299), 
             A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=15, p=0.5),
             A.RGBShift(r_shift_limit=15, g_shift_limit=15, b_shift_limit=15, p=0.5), 
             # A.RandomBrightnessContrast(p=0.5),

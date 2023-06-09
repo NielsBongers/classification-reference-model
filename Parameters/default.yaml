@@ -1,8 +1,10 @@
 run name: Testing
-root: "../Datasets/Temnos demo/X-ray/Sorted"
-learning rate: 0.001
+# root: "../Datasets/Temnos demo/X-ray/Sorted images"
+root: "../Datasets/Ants vs bees"
+model: "resnet50"
+learning rate: 0.0005
 gamma: 0.9 
 epochs: 1000 
-desired batch size: 32 
+desired batch size: 16
 real batch size: 8 
 only save best: Yes 

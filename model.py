@@ -80,6 +80,8 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             
             metric = MulticlassConfusionMatrix(num_classes=2).to(device) 
 
+            optimizer.zero_grad() 
+
             for index, (inputs, labels) in enumerate(data_loader[phase]):
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -90,19 +92,19 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
                 with torch.set_grad_enabled(phase=="train"):
                     
                     outputs = model(inputs)
-                    
                     _, preds = torch.max(outputs, 1)
-
+                    
                     if phase == "train": 
                         loss = loss_function(outputs, labels) / gradient_accumulation_steps
                         loss.backward() 
                     
-                    if phase == "train" and index % gradient_accumulation_steps == 0: 
+                    if phase == "train" and ((index + 1) % gradient_accumulation_steps == 0 or (index + 1) == len(data_loader[phase])):
                         optimizer.step()
                         optimizer.zero_grad()
                         
                     if phase == "test": 
                         metric.update(preds, labels) 
+                        
                         
                 total_count += labels.shape[0]
                 running_corrects += torch.sum(preds == labels.data).item() 
@@ -139,16 +141,33 @@ def prepare_model(data_loaders: dict, parameters: dict) -> None:
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.IMAGENET1K_V1, classes=2) 
-    model.classifier[1] = nn.Linear(in_features=1280, out_features=2) 
+    num_classes = 2 
     
-    # model = models.convnext_base(weights=torchvision.models.ConvNeXt_Base_Weights.IMAGENET1K_V1) 
-    # model.head = nn.Sequential(nn.Linear(1024, 256),
-    #     nn.ReLU(),
-    #     nn.Linear(256, 1),
-    #     nn.Sigmoid())
+    if parameters["model"] == "efficientnet": 
+        model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.IMAGENET1K_V1, classes=num_classes) 
+        model.classifier[1] = nn.Linear(in_features=1280, out_features=2) 
     
-    model = model.to(device)
+    if parameters["model"] == "convnext": 
+        model = models.convnext_small(weights=torchvision.models.ConvNeXt_Small_Weights.IMAGENET1K_V1) 
+        model.classifier[2] = nn.Sequential(nn.Linear(768, 2), 
+                                            nn.Sigmoid())
+    
+    if parameters["model"] == "inception": 
+        model = models.inception_v3(weights=models.Inception_V3_Weights.IMAGENET1K_V1) 
+        model.aux_logits=False
+        model.fc = nn.Linear(2048, num_classes)
+    
+    if parameters["model"] == "resnet152": 
+        model = models.resnet152(weights=torchvision.models.ResNet152_Weights.DEFAULT)
+        fc_layer_output = model.fc.in_features
+        model.fc = torch.nn.Linear(fc_layer_output, num_classes)
+    
+    if parameters["model"] == "resnet50": 
+        model = models.resnet50(weights=torchvision.models.ResNet50_Weights.DEFAULT)
+        fc_layer_output = model.fc.in_features
+        model.fc = torch.nn.Linear(fc_layer_output, num_classes)
+    
+    model.to(device) 
 
     loss_function = nn.CrossEntropyLoss()
     
