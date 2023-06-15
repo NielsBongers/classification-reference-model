@@ -166,13 +166,19 @@ def prepare_model(data_loaders: dict, parameters: dict) -> None:
         model = models.resnet50(weights=torchvision.models.ResNet50_Weights.DEFAULT)
         fc_layer_output = model.fc.in_features
         model.fc = torch.nn.Linear(fc_layer_output, parameters["num_classes"])
+        
+    if parameters["model"] == "resnet18": 
+        model = models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
+        fc_layer_output = model.fc.in_features
+        model.fc = torch.nn.Linear(fc_layer_output, parameters["num_classes"])
     
     model.to(device) 
 
     loss_function = nn.CrossEntropyLoss()
     
-    optimizer = optim.SGD(model.parameters(), lr=parameters["learning rate"], momentum=0.9)
+    optimizer = optim.AdamW(model.parameters(), lr=parameters["learning rate"], betas=[0.9, 0.999], weight_decay=0.01)
     scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=parameters["gamma"])
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 20 - parameters["warmup epochs"]) 
     
     logger.info(f"Prepared model on {device}.")
     

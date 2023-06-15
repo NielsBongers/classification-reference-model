@@ -14,8 +14,8 @@ def main():
     root = parameters["root"] 
     
     data_loaders = {
-        "train": create_image_folder(root, "train", batch_size=4), 
-        "test": create_image_folder(root, "test", batch_size=49)
+        "train": create_image_folder(root, "train", batch_size=parameters["real batch size"]), 
+        "test": create_image_folder(root, "test", batch_size=parameters["real batch size"])
     }
     
     prepare_model(data_loaders, parameters)

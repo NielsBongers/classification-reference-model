@@ -4,6 +4,7 @@ root: "../Datasets/Ants vs bees"
 model: "resnet50"
 
 learning rate: 0.0005
+warmup epochs: 5
 gamma: 0.9 
 epochs: 1000 
 
