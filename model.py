@@ -118,7 +118,7 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             
             if phase == "test": 
                 test_accuracy = epoch_accuracy
-                logger.info(f"Confusion matrix:{metric.compute()}")
+                logger.info(f"Confusion matrix:\n{metric.compute()}")
 
             if phase == 'test' and epoch_accuracy > best_accuracy:
                 logger.info(f"New best model! Accuracy is {epoch_accuracy}. Saving the model.")
