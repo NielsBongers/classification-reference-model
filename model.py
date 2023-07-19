@@ -78,7 +78,7 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             total_count = 0
             running_corrects = 0
             
-            metric = MulticlassConfusionMatrix(parameters["num_classes"]).to(device) 
+            metric = MulticlassConfusionMatrix(parameters["number classes"]).to(device) 
 
             optimizer.zero_grad() 
 
@@ -123,7 +123,8 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             if phase == 'test' and epoch_accuracy > best_accuracy:
                 logger.info(f"New best model! Accuracy is {epoch_accuracy}. Saving the model.")
                 best_accuracy = epoch_accuracy
-                save_model(model, epoch, parameters, parameters["run path"]) 
+                if parameters["save model"]: 
+                    save_model(model, epoch, parameters, parameters["run path"]) 
 
         writer.add_scalars("Accuracy", {
             "train": train_accuracy, 
@@ -141,36 +142,34 @@ def prepare_model(data_loaders: dict, parameters: dict) -> None:
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    parameters["num_classes"] = 7 
-    
     if parameters["model"] == "efficientnet": 
-        model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.IMAGENET1K_V1, classes=parameters["num_classes"]) 
+        model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.IMAGENET1K_V1, classes=parameters["number classes"]) 
         model.classifier[1] = nn.Linear(in_features=1280, out_features=2) 
     
     if parameters["model"] == "convnext": 
         model = models.convnext_small(weights=torchvision.models.ConvNeXt_Small_Weights.IMAGENET1K_V1) 
-        model.classifier[2] = nn.Sequential(nn.Linear(768, parameters["num_classes"]), 
+        model.classifier[2] = nn.Sequential(nn.Linear(768, parameters["number classes"]), 
                                             nn.Sigmoid())
     
     if parameters["model"] == "inception": 
         model = models.inception_v3(weights=models.Inception_V3_Weights.IMAGENET1K_V1) 
         model.aux_logits=False
-        model.fc = nn.Linear(2048, parameters["num_classes"])
+        model.fc = nn.Linear(2048, parameters["number classes"])
     
     if parameters["model"] == "resnet152": 
         model = models.resnet152(weights=torchvision.models.ResNet152_Weights.DEFAULT)
         fc_layer_output = model.fc.in_features
-        model.fc = torch.nn.Linear(fc_layer_output, parameters["num_classes"])
+        model.fc = torch.nn.Linear(fc_layer_output, parameters["number classes"])
     
     if parameters["model"] == "resnet50": 
         model = models.resnet50(weights=torchvision.models.ResNet50_Weights.DEFAULT)
         fc_layer_output = model.fc.in_features
-        model.fc = torch.nn.Linear(fc_layer_output, parameters["num_classes"])
+        model.fc = torch.nn.Linear(fc_layer_output, parameters["number classes"])
         
     if parameters["model"] == "resnet18": 
         model = models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
         fc_layer_output = model.fc.in_features
-        model.fc = torch.nn.Linear(fc_layer_output, parameters["num_classes"])
+        model.fc = torch.nn.Linear(fc_layer_output, parameters["number classes"])
     
     model.to(device) 
 

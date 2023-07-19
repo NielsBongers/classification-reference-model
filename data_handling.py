@@ -29,7 +29,7 @@ def get_transforms() -> dict:
     """
     transform_train = A.Compose(
         [
-            A.Resize(299, 299), 
+            A.Resize(224, 224), 
             A.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.05, rotate_limit=15, p=0.5),
             A.RGBShift(r_shift_limit=15, g_shift_limit=15, b_shift_limit=15, p=0.5), 
             # A.RandomBrightnessContrast(p=0.5),
@@ -73,7 +73,7 @@ def create_image_folder(root: str, split_type: str, batch_size) -> torch.utils.d
     
     logger.info(f"For {split_type}, we have {dataset.class_to_idx}")
     
-    data_loader = torch.utils.data.DataLoader(dataset, batch_size, shuffle=(split_type=="train"))
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size, shuffle=(split_type=="train"), num_workers=12)
     
     return data_loader
     

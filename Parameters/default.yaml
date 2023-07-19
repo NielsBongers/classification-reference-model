@@ -1,14 +1,18 @@
-run name: Testing
-root: "../Datasets/Ants vs bees"
+run name: X-ray GPU stress test
+# root: "../Datasets/Ants vs bees"
+root: "F:/X-ray datasets/HiXray/Sorted data test"
 
-model: "resnet50"
+model: "convnext"
 
 learning rate: 0.0005
 warmup epochs: 5
 gamma: 0.9 
 epochs: 1000 
 
-desired batch size: 16
-real batch size: 8 
+desired batch size: 40
+real batch size: 40
+
+number classes: 2 
 
 only save best: Yes 
+save model: No 
