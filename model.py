@@ -123,7 +123,7 @@ def train_model(model, data_loader, device, loss_function, optimizer, scheduler,
             if parameters["save model"] and parameters["save all models"]: 
                 save_model(model, epoch, parameters, parameters["run path"]) 
 
-            if phase == 'test' and epoch_accuracy > best_accuracy:
+            if phase == "test" and epoch_accuracy > best_accuracy:
                 logger.info(f"New best model! Accuracy is {epoch_accuracy}. Saving the model.")
                 best_accuracy = epoch_accuracy
                 if parameters["save model"]: 
