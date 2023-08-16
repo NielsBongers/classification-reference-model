@@ -1,8 +1,8 @@
-run name: X-ray GPU stress test
+run name: Example run
 # root: "../Datasets/Ants vs bees"
 root: "F:/X-ray datasets/HiXray/Sorted data test"
 
-model: "convnext"
+model: "resnet15"
 
 learning rate: 0.0005
 warmup epochs: 5
