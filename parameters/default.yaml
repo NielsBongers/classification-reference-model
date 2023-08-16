@@ -9,8 +9,8 @@ warmup epochs: 5
 gamma: 0.9 
 epochs: 1000 
 
-desired batch size: 40
-real batch size: 40
+desired batch size: 10
+real batch size: 10
 
 number classes: 2 
 
