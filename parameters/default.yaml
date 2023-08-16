@@ -4,7 +4,7 @@ root: "F:/X-ray datasets/HiXray/Sorted data test"
 
 model: "resnet18"
 
-learning rate: 0.0005
+learning rate: 0.005
 warmup epochs: 5
 gamma: 0.9 
 epochs: 1000 
