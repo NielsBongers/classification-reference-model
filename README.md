@@ -33,3 +33,12 @@ I have added some network architectures for fine-tuning, with pre-trained weight
 - EfficientNetV2 
 - ConvNeXt 
 - InceptionV3
+
+## Installation 
+
+Simply run: 
+
+```pip -r requirements.txt 
+```
+
+Then, start the code by running ```main.py```. 
