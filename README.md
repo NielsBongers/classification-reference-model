@@ -39,7 +39,7 @@ I have added some network architectures for fine-tuning, with pre-trained weight
 Simply run: 
 
 ```
-pip -r requirements.txt 
+pip install -r requirements.txt 
 ```
 
 Then, start the code by running ```main.py```. 
