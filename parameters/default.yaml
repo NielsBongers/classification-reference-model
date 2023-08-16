@@ -2,7 +2,7 @@ run name: Example run
 # root: "../Datasets/Ants vs bees"
 root: "F:/X-ray datasets/HiXray/Sorted data test"
 
-model: "resnet15"
+model: "resnet18"
 
 learning rate: 0.0005
 warmup epochs: 5
