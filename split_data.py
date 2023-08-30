@@ -72,6 +72,65 @@ def create_split_names(root: str, test_size=0.2):
     logger.info("Completed splitting.")
 
 
+def create_split_folders(root: str, test_size=0.2):
+    logger = get_logger(__name__)
+
+    file_path_list = list(Path(root, "raw").glob("**/*"))
+
+    alkaline_dict = {}
+    lithium_dict = {}
+
+    data_classes = {"alkaline": alkaline_dict, "lithium": lithium_dict}
+
+    for file_path in file_path_list:
+        if not file_path.is_file():
+            continue
+
+        class_key = file_path.parent.name
+        image_id, image_count = file_path.stem.split(" ")
+
+        if image_id not in data_classes[class_key]:
+            data_classes[class_key][image_id] = []
+
+        data_classes[class_key][image_id].append(file_path)
+
+    for class_key in data_classes.keys():
+        print(class_key)
+
+        training_keys, test_keys = train_test_split(
+            list(data_classes[class_key].keys()), test_size=test_size
+        )
+
+        for training_key in training_keys:
+            print(f"Class key: {class_key}, training key: {training_key}")
+            print(data_classes[class_key])
+
+            image_source_paths = data_classes[class_key][training_key]
+
+            for image_source_path in image_source_paths:
+                image_destination_path = Path(root, "sorted", "train", class_key)
+                image_destination_path.mkdir(parents=True, exist_ok=True)
+
+                shutil.copy(
+                    image_source_path,
+                    str(image_destination_path / Path(image_source_path.name)),
+                )
+
+        for test_key in test_keys:
+            image_source_paths = data_classes[class_key][test_key]
+
+            for image_source_path in image_source_paths:
+                image_destination_path = Path(root, "sorted", "test", class_key)
+                image_destination_path.mkdir(parents=True, exist_ok=True)
+
+                shutil.copy(
+                    image_source_path,
+                    str(image_destination_path / Path(image_source_path.name)),
+                )
+
+
 if __name__ == "__main__":
-    root = Path("../Datasets/Temnos demo/X-ray")
-    create_split_names(root)
+    root = Path(
+        "../Datasets/Battery classification/Wisse's preliminary data/Sorted/alkaline_lithium_cropped"
+    )
+    create_split_folders(root)
