@@ -85,7 +85,9 @@ def create_image_folder(
 
 
 if __name__ == "__main__":
-    root = Path("../Datasets/Temnos demo/X-ray/Sorted")
+    root = Path(
+        r"D:\Google Drive\Python\Datasets\Battery classification\Wisse preliminary dataset\Sorted\alkaline_lithium_cropped\sorted"
+    )
     dataset = create_image_folder(root, "train", batch_size=10)
 
     for item in dataset:

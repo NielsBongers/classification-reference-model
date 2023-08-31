@@ -1,16 +1,16 @@
-run name: X-ray GPU stress test
+run name: Wisse battery test
 # root: "../Datasets/Ants vs bees"
-root: "F:/X-ray datasets/HiXray/Sorted data test"
+root: "../../Datasets/Battery classification/Wisse preliminary data/Sorted/alkaline_lithium_cropped"
 
-model: "convnext"
+model: "resnet50"
 
 learning rate: 0.0005
 warmup epochs: 5
 gamma: 0.9 
 epochs: 1000 
 
-desired batch size: 40
-real batch size: 40
+desired batch size: 32
+real batch size: 16
 
 number classes: 2 
 
