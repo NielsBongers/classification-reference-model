@@ -1,6 +1,6 @@
-run name: Wisse battery test
+run name: Wisse battery test, more data
 # root: "../Datasets/Ants vs bees"
-root: "../../Datasets/Battery classification/Wisse preliminary data/Sorted/alkaline_lithium_cropped"
+root: 'D:\Google Drive\Python\Datasets\Battery classification\Wisse combined datasets\sorted' 
 
 model: "resnet50"
 
@@ -12,8 +12,8 @@ epochs: 1000
 desired batch size: 32
 real batch size: 16
 
-number classes: 2 
+number classes: 3
 
 only save best: Yes 
-save model: No 
+save model: Yes 
 save all models: No 

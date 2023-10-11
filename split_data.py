@@ -77,22 +77,39 @@ def create_split_folders(root: str, test_size=0.2):
 
     file_path_list = list(Path(root, "raw").glob("**/*"))
 
-    alkaline_dict = {}
-    lithium_dict = {}
+    print(Path(root, "raw"))
 
-    data_classes = {"alkaline": alkaline_dict, "lithium": lithium_dict}
+    alkaline_dict = {}
+    lithium_high_dict = {}
+    lithium_low_dict = {}
+
+    data_classes = {
+        "alkaline": alkaline_dict,
+        "lithium-high": lithium_high_dict,
+        "lithium-low": lithium_low_dict,
+    }
 
     for file_path in file_path_list:
         if not file_path.is_file():
             continue
 
+        print(file_path)
+
         class_key = file_path.parent.name
-        image_id, image_count = file_path.stem.split(" ")
+
+        if len(file_path.stem.split(" ")) == 1:
+            image_id, image_count = file_path.stem.replace("(", " (").split(" ")
+
+        else:
+            print(file_path.stem)
+            image_id, image_count = file_path.stem.split(" ")
 
         if image_id not in data_classes[class_key]:
             data_classes[class_key][image_id] = []
 
         data_classes[class_key][image_id].append(file_path)
+
+    print(data_classes)
 
     for class_key in data_classes.keys():
         print(class_key)
@@ -130,7 +147,5 @@ def create_split_folders(root: str, test_size=0.2):
 
 
 if __name__ == "__main__":
-    root = Path(
-        "../Datasets/Battery classification/Wisse's preliminary data/Sorted/alkaline_lithium_cropped"
-    )
+    root = Path("../Datasets/Battery classification/Wisse combined datasets")
     create_split_folders(root)
