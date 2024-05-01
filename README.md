@@ -2,7 +2,7 @@
 
 ## Overview 
 
-Similar to my YOLO code, I have created a set of PyTorch code that can be easily adapted to different classification tasks. Configuration can be done using the YAML file under ```parameters```. All hyperparameters and configurations are saved under ```runs```, which are incremented one-by-one. The code uses TensorBoard for tracking, and has gradient accumulation built-in. 
+I have created a set of PyTorch Lightning code that can be easily adapted to different classification tasks. Configuration can be done using the YAML file under ```parameters```. All hyperparameters and configurations are saved. The code uses TensorBoard for tracking. There is support for both classification and regression, with a template for custom datasets included. 
 
 ## Configuration 
 
