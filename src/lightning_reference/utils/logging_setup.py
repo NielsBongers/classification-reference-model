@@ -1,8 +1,16 @@
-import logging, logging.config
+import logging
 from pathlib import Path
 
 
-def get_logger(logger_name):
+def get_logger(logger_name: str) -> logging.Logger:
+    """Creates a logger.
+
+    Args:
+        logger_name (str): Name for the logger.
+
+    Returns:
+        logging.Logger: Logger object
+    """
     Path("logs").mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,

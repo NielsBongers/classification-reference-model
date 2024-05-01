@@ -1,0 +1,19 @@
+run name: Regression testing
+# root: "F://GSM Arena phone images//Sorted" 
+root: "../Datasets/Temnos image photos/RGB/raw"
+
+model: "resnet50"
+
+learning rate: 0.0005
+gamma: 0.9 
+max epochs: 10000000
+
+accumulation steps: 2
+real batch size: 32
+
+# Classification and regression. 
+# Set regression to Yes; number classes does not matter in that case. 
+number classes: 6
+regression: Yes 
+
+save model: No 
