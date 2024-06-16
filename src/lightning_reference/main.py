@@ -32,7 +32,12 @@ def main():
     image_list = list(Path(r"F:\COCO\train2017").glob("**/*"))[0:100000]
 
     data_module = CustomDataModule(image_list=image_list, batch_size=batch_size)
-    model = ClassificationModel(lr=lr, num_classes=num_classes, model_name=model_name)
+    # model = ClassificationModel(lr=lr, num_classes=num_classes, model_name=model_name)
+
+    checkpoint_path = r"D:\Desktop\classification-reference-model\logs\Rotation classification\version_16\checkpoints\best-checkpoint.ckpt"
+
+    model = ClassificationModel.load_from_checkpoint(checkpoint_path=checkpoint_path)
+
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
     checkpoint_callback = ModelCheckpoint(
         monitor="val_loss",  # Metric to monitor
@@ -52,7 +57,11 @@ def main():
         log_every_n_steps=8,
     )
 
-    trainer.fit(model, datamodule=data_module)
+    trainer.fit(
+        model,
+        datamodule=data_module,
+        ckpt_path=checkpoint_path,
+    )
 
 
 if __name__ == "__main__":

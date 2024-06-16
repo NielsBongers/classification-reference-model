@@ -37,6 +37,10 @@ def prepare_model(model_name: str, num_classes: int) -> None:
         model.aux_logits = False
         model.fc = nn.Linear(2048, num_classes)
 
+    if model_name == "swinv2b":
+        model = models.swin_v2_b(weights=models.Swin_V2_B_Weights.IMAGENET1K_V1)
+        model.head = torch.nn.Linear(model.head.num_classes, 4)
+
     if model_name == "resnet152":
         model = models.resnet152(weights=torchvision.models.ResNet152_Weights.DEFAULT)
         fc_layer_output = model.fc.in_features
