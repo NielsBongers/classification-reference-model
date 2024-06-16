@@ -1,6 +1,6 @@
-run name: Regression testing
+run name: Rotation classification 
 # root: "F://GSM Arena phone images//Sorted" 
-root: "../Datasets/Temnos image photos/RGB/raw"
+root: "F://COCO//train2017"
 
 model: "resnet50"
 
@@ -9,11 +9,11 @@ gamma: 0.9
 max epochs: 10000000
 
 accumulation steps: 2
-real batch size: 32
+real batch size: 64
 
 # Classification and regression. 
 # Set regression to Yes; number classes does not matter in that case. 
-number classes: 6
-regression: Yes 
+number classes: 4
+regression: No 
 
-save model: No 
+save model: Yes 

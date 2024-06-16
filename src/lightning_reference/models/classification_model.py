@@ -9,7 +9,7 @@ class ClassificationModel(L.LightningModule):
     def __init__(self, num_classes: int, lr: float, model_name: str):
         super().__init__()
 
-        self.NUM_CLASSES = num_classes
+        self.num_classes = num_classes
         self.lr = lr
 
         self.best_acc = -1
@@ -18,9 +18,9 @@ class ClassificationModel(L.LightningModule):
 
         self.save_hyperparameters()
 
-        self.train_accuracy = Accuracy(task="multiclass", num_classes=self.NUM_CLASSES)
-        self.val_accuracy = Accuracy(task="multiclass", num_classes=self.NUM_CLASSES)
-        self.val_f1 = F1Score(task="multiclass", num_classes=self.NUM_CLASSES)
+        self.train_accuracy = Accuracy(task="multiclass", num_classes=self.num_classes)
+        self.val_accuracy = Accuracy(task="multiclass", num_classes=self.num_classes)
+        self.val_f1 = F1Score(task="multiclass", num_classes=self.num_classes)
         self.loss_fn = torch.nn.CrossEntropyLoss()
 
     def forward(self, x):
@@ -29,6 +29,9 @@ class ClassificationModel(L.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self.forward(x)
+
+        # print(f"Label: {y}. Model prediction: {logits}")
+
         loss = self.loss_fn(logits, y)
         acc = self.train_accuracy(logits, y)
         self.log("train_accuracy", acc, on_step=False, on_epoch=True)

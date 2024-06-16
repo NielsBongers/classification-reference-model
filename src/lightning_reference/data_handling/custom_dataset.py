@@ -1,4 +1,6 @@
+import random
 from pathlib import Path
+from typing import List
 
 import lightning as L
 import pandas as pd
@@ -12,32 +14,31 @@ from torchvision.transforms import v2
 
 
 class CustomDataset(torch.utils.data.Dataset):
-    def __init__(self, df: pd.DataFrame, images_path: str, transform: v2.Compose):
-        self.df = df
-        self.images_path = images_path
+    def __init__(self, image_list: List[Path], transform: v2.Compose):
+        self.image_list = image_list
         self.transform = transform
 
     def __len__(self):
-        return len(self.df)
+        return len(self.image_list)
 
     def __getitem__(self, idx):
-        row = self.df.iloc[idx]
-        image_name = row["UUID"] + " - " + row["phone_name"] + " - weight.png"
+        image_path = self.image_list[idx]
 
-        img = Im.open(Path(self.images_path, image_name))
+        img = Im.open(image_path)
+
+        rotation_options = [0, 90, 180, 270]
+
+        selected_index = random.randint(0, len(rotation_options) - 1)
+        selected_rotation = rotation_options[selected_index]
+        img = img.rotate(selected_rotation)
 
         img = self.transform(img)
-        weight = row["weight"]
 
-        return img, weight
+        return img, selected_index
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(
-        "../Datasets/Temnos image photos/Temnos demo dataset - corrected.csv"
-    )
-
-    images_path = "../Datasets/Temnos image photos/RGB/raw"
+    image_path_list = list(Path(r"F:\COCO\train2017").glob("**/*"))
 
     transform = v2.Compose(
         [
@@ -49,13 +50,11 @@ if __name__ == "__main__":
         ]
     )
 
-    regression_dataset = CustomDataset(
-        df=df, images_path=images_path, transform=transform
-    )
+    regression_dataset = CustomDataset(image_list=image_path_list, transform=transform)
 
-    img, weight = regression_dataset[0]
+    img, selected_rotation = regression_dataset[0]
 
-    print(weight)
+    print(selected_rotation)
 
     import matplotlib.pyplot as plt
 

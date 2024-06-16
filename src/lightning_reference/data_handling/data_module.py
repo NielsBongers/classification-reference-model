@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import lightning as L
 import pandas as pd
@@ -17,20 +18,22 @@ class CustomDataModule(L.LightningDataModule):
         L (_type_): PyTorch Lightning.
     """
 
-    def __init__(self, data_dir: str, batch_size: int = 32, df: pd.DataFrame = None):
+    def __init__(
+        self, image_list: List[Path], batch_size: int = 32, df: pd.DataFrame = None
+    ):
         super().__init__()
-        self.data_dir = data_dir
+        self.image_list = image_list
         self.batch_size = batch_size
         self.transform = v2.Compose(
             [
                 v2.RandomResizedCrop(size=(224, 224), antialias=True),
-                v2.RandomHorizontalFlip(p=0.5),
                 v2.ToImage(),
                 v2.ToDtype(torch.float32, scale=True),
                 v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ]
         )
 
+        self.data_dir = None
         self.df = df
 
     def prepare_data(self) -> None:
@@ -38,33 +41,23 @@ class CustomDataModule(L.LightningDataModule):
         pass
 
     def setup(self, stage: str):
-        if self.df is None:
-            self.train_dataset = ImageFolder(
-                Path(self.data_dir) / "train", transform=self.transform
-            )
-            self.val_dataset = ImageFolder(
-                Path(self.data_dir) / "test", transform=self.transform
-            )
+        custom_dataset = CustomDataset(
+            image_list=self.image_list,
+            transform=self.transform,
+        )
 
-        else:
-            custom_dataset = CustomDataset(
-                df=self.df,
-                images_path=self.data_dir,
-                transform=self.transform,
-            )
-
-            self.train_dataset, self.val_dataset = random_split(
-                dataset=custom_dataset,
-                lengths=[0.8, 0.2],
-                generator=torch.Generator().manual_seed(42),
-            )
+        self.train_dataset, self.val_dataset = random_split(
+            dataset=custom_dataset,
+            lengths=[0.8, 0.2],
+            generator=torch.Generator().manual_seed(42),
+        )
 
     def train_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=4,
+            num_workers=10,
             persistent_workers=True,
         )
 
@@ -73,7 +66,7 @@ class CustomDataModule(L.LightningDataModule):
             self.val_dataset,
             batch_size=self.batch_size,
             shuffle=False,
-            num_workers=4,
+            num_workers=5,
             persistent_workers=True,
         )
 
