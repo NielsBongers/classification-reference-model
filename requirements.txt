@@ -1,4 +1,4 @@
-lightning==2.1.2
+lightning>2.2.1
 pandas==2.0.3
 PyYAML==6.0.1
 torch==2.1.1+cu121
