@@ -61,6 +61,6 @@ class ClassificationModel(L.LightningModule):
             weight_decay=0.01,
         )
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-            optimizer, T_0=20
+            optimizer, T_0=40
         )
         return [optimizer], [scheduler]
