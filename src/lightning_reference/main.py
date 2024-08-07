@@ -27,12 +27,8 @@ def main():
     batch_size = config["real batch size"]
     gradient_steps = config["accumulation steps"]
 
-    df = pd.read_csv(
-        "../Datasets/Temnos image photos/Temnos demo dataset - corrected.csv"
-    )
-
-    data_module = CustomDataModule(root, batch_size, df=df)
-    model = RegressionModel(lr=lr, num_classes=num_classes, model_name=model_name)
+    data_module = CustomDataModule(data_dir=root, batch_size=batch_size)
+    model = ClassificationModel(lr=lr, num_classes=num_classes, model_name=model_name)
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
     # early_stopping = EarlyStopping("val_loss", patience=7)
 

@@ -1,8 +1,7 @@
-run name: Regression testing
-# root: "F://GSM Arena phone images//Sorted" 
-root: "../Datasets/Temnos image photos/RGB/raw"
+run name: X-ray batteries
+root: "C:/Users/Niels/My Drive/Python/Datasets/X-ray alkaline lithium-ion/organized"
 
-model: "resnet50"
+model: "convnext"
 
 learning rate: 0.0005
 gamma: 0.9 
@@ -13,7 +12,7 @@ real batch size: 32
 
 # Classification and regression. 
 # Set regression to Yes; number classes does not matter in that case. 
-number classes: 6
-regression: Yes 
+number classes: 2
+regression: No 
 
 save model: No 

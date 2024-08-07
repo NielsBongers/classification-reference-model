@@ -47,7 +47,7 @@ class ClassificationModel(L.LightningModule):
         self.log("val_loss", loss, on_step=False, on_epoch=True)
         self.log("val_accuracy", acc, on_step=False, on_epoch=True)
         self.log("val_f1", f1, on_step=False, on_epoch=True)
-        self.log("hp_metric", self.best_acc, on_step=False, on_epoch=True)
+        self.log("hp_metric", float(self.best_acc), on_step=False, on_epoch=True)
 
     def configure_optimizers(self):
         torch.set_float32_matmul_precision("medium")
